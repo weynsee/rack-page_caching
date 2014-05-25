@@ -1,5 +1,5 @@
 module Rack
-  module PageCaching
+  class PageCaching
     VERSION = "0.0.1"
   end
 end
