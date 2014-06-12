@@ -35,7 +35,7 @@ module Rack
       private
 
       def set_defaults
-        set_rails_defaults if defined? Rails
+        set_rails_defaults if defined? ::Rails
         normalize_values
         toggle_caching
       end
@@ -55,8 +55,8 @@ module Rack
 
       def set_rails_defaults
         @options = {
-          :page_cache_directory => Rails.root.join('public'),
-          :enable => Rails.application.config.action_controller.perform_caching
+          :page_cache_directory => ::Rails.root.join('public'),
+          :enable => ::Rails.application.config.action_controller.perform_caching
         }.merge(@options)
       end
     end

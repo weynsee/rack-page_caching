@@ -5,7 +5,7 @@ require "rack/page_caching/response"
 require "rack/page_caching/cache"
 require "rack/page_caching/mime_types"
 
-require "rack/page_caching/rails" if defined?(Rails)
+require "rack/page_caching/action_controller" if defined?(::Rails)
 
 module Rack
   class PageCaching

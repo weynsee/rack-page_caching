@@ -1,6 +1,6 @@
 module Rack
   class PageCaching
-    module Rails
+    module ActionController
       extend ActiveSupport::Concern
 
       module ClassMethods
@@ -56,4 +56,4 @@ module Rack
   end
 end
 
-ActionController::Base.send(:include, Rack::PageCaching::Rails)
+ActionController::Base.send(:include, Rack::PageCaching::ActionController)
