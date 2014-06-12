@@ -4,7 +4,7 @@ describe Rack::PageCaching::Response do
   let(:rack_response) do
     [
       200,
-      { 'Content-Type' => 'text/html' },
+      { 'Content-Type' => 'text/html; charset=utf-8' },
       ['Foo Bar']
     ]
   end
