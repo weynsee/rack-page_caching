@@ -4,7 +4,8 @@ module FileHelper
   def self.included(base)
     base.class_eval do
       let(:cache_path) do
-        ::File.join(::File.dirname(__FILE__), '/../tmp/', 'cache')
+        path = ::File.join(::File.dirname(__FILE__), '/../tmp/', 'cache')
+        File.expand_path path
       end
 
       before do

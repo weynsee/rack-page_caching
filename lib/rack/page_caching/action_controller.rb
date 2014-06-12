@@ -43,7 +43,7 @@ module Rack
             request.path
         end
 
-        if (type = Mime::LOOKUP[self.content_type]) && (type_symbol = type.symbol).present?
+        if (type = ::Mime::LOOKUP[self.content_type]) && (type_symbol = type.symbol).present?
           path = "#{path}.#{type_symbol}"
         end
 

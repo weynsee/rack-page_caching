@@ -1,21 +1,25 @@
 require 'action_controller'
 require "rack/page_caching/action_controller"
 require 'test_helper'
+require './test/support/file_helper'
 
-class TestController < ActionController::Metal
+class TestController < ActionController::Base
   def index
-    self.response_body = 'test'
+    render text: 'test'
+    cache_page 'testing', 'test_file'
   end
 end
 
 describe Rack::PageCaching::ActionController do
   include Rack::Test::Methods
+  include FileHelper
 
   def app
+    path = cache_path
     Rack::Builder.new {
       map '/' do
         use Rack::PageCaching,
-          :page_cache_directory => 'something',
+          :page_cache_directory => path,
           :include_hostname => true
         run TestController.action(:index)
       end
@@ -24,7 +28,6 @@ describe Rack::PageCaching::ActionController do
 
   it 'does something' do
     get '/'
-    puts last_response.inspect
     assert last_response.ok?
   end
 end

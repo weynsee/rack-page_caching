@@ -34,6 +34,7 @@ module Rack
       end
 
       def self.write_file(content, path, gzip_level)
+        content = Array(content)
         expand_path('write_file', path) do |full_path|
           FileUtils.makedirs(::File.dirname(full_path))
           ::File.open(full_path, 'wb+') { |f| content.each { |c| f.write(c) } }
