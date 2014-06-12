@@ -4,9 +4,10 @@ require 'test_helper'
 require './test/support/file_helper'
 
 class TestController < ActionController::Base
+  caches_page :index
+
   def index
-    render text: 'test'
-    cache_page 'testing', 'test_file'
+    render text: 'foo bar'
   end
 end
 
@@ -26,8 +27,11 @@ describe Rack::PageCaching::ActionController do
     }.to_app
   end
 
+  let(:cache_file) { File.join(cache_path, 'www.test.org', 'index.html') }
+
   it 'does something' do
-    get '/'
-    assert last_response.ok?
+    get 'http://www.test.org/'
+    assert File.exist?(cache_file)
+    File.read(cache_file).must_equal 'foo bar'
   end
 end

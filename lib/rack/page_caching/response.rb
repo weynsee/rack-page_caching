@@ -20,7 +20,7 @@ module Rack
       end
 
       def content_type
-        @response[1]['Content-Type']
+        @response[1]['Content-Type'].split(';').first
       end
 
       def gzip_level

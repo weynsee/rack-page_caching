@@ -4,8 +4,9 @@ module Rack
       extend ActiveSupport::Concern
 
       module ClassMethods
-        def caches_pages(*actions)
+        def caches_page(*actions)
           return unless perform_caching
+          options = actions.extract_options!
           gzip_level = options.fetch(:gzip, Zlib::BEST_COMPRESSION)
           gzip_level = Rack::PageCaching::Utils.gzip_level(gzip_level)
           after_filter({ only: actions }.merge(options)) do |c|
@@ -48,7 +49,7 @@ module Rack
         end
 
         Rack::PageCaching::Cache.write_file(
-          content || response.body, path,
+          Array(content || response.body), path,
           Rack::PageCaching::Utils.gzip_level(gzip)
         )
       end
