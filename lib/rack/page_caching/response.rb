@@ -12,7 +12,7 @@ module Rack
       end
 
       def path
-        @env['PATH_INFO']
+        @path ||= request.path
       end
 
       def body
