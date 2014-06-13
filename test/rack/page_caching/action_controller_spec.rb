@@ -5,13 +5,13 @@ require './test/support/file_helper'
 
 class TestController < ActionController::Base
   caches_page :with_domain
-  caches_page :ok, if: Proc.new { |c| !c.request.format.json? }
+  caches_page :just_head, if: Proc.new { |c| !c.request.format.json? }
 
   def with_domain
     render text: 'foo bar'
   end
 
-  def ok
+  def just_head
     head :ok
   end
 end
@@ -30,9 +30,9 @@ describe Rack::PageCaching::ActionController do
         use Rack::PageCaching, options.merge(include_hostname: true)
         run TestController.action(:with_domain)
       end
-      map '/ok' do
+      map '/just_head' do
         use Rack::PageCaching, options
-        run TestController.action(:ok)
+        run TestController.action(:just_head)
       end
     }.to_app
   end
@@ -51,8 +51,8 @@ describe Rack::PageCaching::ActionController do
   end
 
   it 'caches head request' do
-    head '/ok'
-    set_path 'ok.html'
+    head '/just_head'
+    set_path 'just_head.html'
     assert File.exist?(cache_file), 'head response should have been cached'
   end
 end
