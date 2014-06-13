@@ -9,6 +9,7 @@ class TestController < ActionController::Base
   caches_page :redirect_somewhere
   caches_page :no_gzip, gzip: false
   caches_page :gzip_level, gzip: :best_speed
+  caches_page :accept_xml
 
   def cache
     render text: 'foo bar'
@@ -31,8 +32,20 @@ class TestController < ActionController::Base
     cache_page('Cache rules everything around me', 'wootang.html')
   end
 
+  def without_extension
+    render text: 'without extension'
+    cache_page('Path without extension', 'without_extension')
+  end
+
   def gzip_level
     render text: 'level up'
+  end
+
+  def accept_xml
+    respond_to do |format|
+      format.html { render text: 'I am html' }
+      format.xml  { render text: 'I am xml'  }
+    end
   end
 end
 
@@ -51,7 +64,7 @@ describe Rack::PageCaching::ActionController do
         run TestController.action(:cache)
       end
       [:cache, :just_head, :redirect_somewhere, :custom_caching,
-       :no_gzip, :gzip_level].each do |action|
+       :no_gzip, :gzip_level, :without_extension, :accept_xml].each do |action|
         map "/#{action}" do
           use Rack::PageCaching, options
           run TestController.action(action)
@@ -74,7 +87,7 @@ describe Rack::PageCaching::ActionController do
     assert File.exist?(File.join(cache_path, 'cache.html.gz')),
       'gzipped cache.html file should exist'
     assert last_request.env['rack.page_caching.compression'] == Zlib::BEST_COMPRESSION,
-      'compression level must be best compression by default'
+      'compression level must use config gzip by default'
   end
 
   it 'saves to a file with the domain as a folder' do
@@ -102,6 +115,12 @@ describe Rack::PageCaching::ActionController do
     File.read(cache_file).must_equal 'Cache rules everything around me'
   end
 
+  it 'caches paths that do not have extensions' do
+    get '/without_extension'
+    set_path 'without_extension.html'
+    assert File.exist?(cache_file), 'without_extension.html should exist'
+  end
+
   it 'does not create a gzip file when gzip argument is false' do
     get '/no_gzip'
     set_path 'no_gzip.html'
@@ -114,5 +133,11 @@ describe Rack::PageCaching::ActionController do
     get '/gzip_level'
     assert last_request.env['rack.page_caching.compression'] == Zlib::BEST_SPEED,
       'compression level must be set to the requested level'
+  end
+
+  it 'caches by http accept attribute' do
+    get '/accept_xml', {}, { 'HTTP_ACCEPT' => 'text/xml' }
+    set_path 'accept_xml.xml'
+    #assert File.exist?(cache_file), 'accept_xml.xml should exist'
   end
 end
