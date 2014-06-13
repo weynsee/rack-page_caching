@@ -6,6 +6,7 @@ require './test/support/file_helper'
 class TestController < ActionController::Base
   caches_page :with_domain
   caches_page :just_head, if: Proc.new { |c| !c.request.format.json? }
+  caches_page :redirect_somewhere
 
   def with_domain
     render text: 'foo bar'
@@ -13,6 +14,15 @@ class TestController < ActionController::Base
 
   def just_head
     head :ok
+  end
+
+  def redirect_somewhere
+    redirect_to '/just_head'
+  end
+
+  def custom_caching
+    render text: 'custom'
+    cache_page('Cache rules everything around me', 'wootang.html')
   end
 end
 
@@ -30,9 +40,11 @@ describe Rack::PageCaching::ActionController do
         use Rack::PageCaching, options.merge(include_hostname: true)
         run TestController.action(:with_domain)
       end
-      map '/just_head' do
-        use Rack::PageCaching, options
-        run TestController.action(:just_head)
+      [:just_head, :redirect_somewhere, :custom_caching].each do |action|
+        map "/#{action}" do
+          use Rack::PageCaching, options
+          run TestController.action(action)
+        end
       end
     }.to_app
   end
@@ -54,5 +66,17 @@ describe Rack::PageCaching::ActionController do
     head '/just_head'
     set_path 'just_head.html'
     assert File.exist?(cache_file), 'head response should have been cached'
+  end
+
+  it 'will not cache when http status is not 200' do
+    get '/redirect_somewhere'
+    assert_cache_folder_is_empty
+  end
+
+  it 'caches custom text to a custom path' do
+    get '/custom_caching'
+    set_path 'wootang.html'
+    assert File.exist?(cache_file), 'wootang.html should exist'
+    File.read(cache_file).must_equal 'Cache rules everything around me'
   end
 end

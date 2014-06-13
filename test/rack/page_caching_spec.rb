@@ -32,7 +32,7 @@ describe Rack::PageCaching do
     end
 
     it 'does not create a file' do
-      assert Dir.entries(cache_path).reject { |f| %w{. ..}.include? f }.size == 0
+      assert_cache_folder_is_empty
     end
   end
 

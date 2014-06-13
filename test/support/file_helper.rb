@@ -15,5 +15,12 @@ module FileHelper
 
       after { FileUtils.rm_rf(::File.dirname(cache_path)) }
     end
+
+    def assert_cache_folder_is_empty
+      assert(
+        Dir.entries(cache_path).reject { |f| %w{. ..}.include? f }.size == 0,
+        'cache folder should be empty'
+      )
+    end
   end
 end

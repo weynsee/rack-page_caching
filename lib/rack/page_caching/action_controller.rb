@@ -45,7 +45,7 @@ module Rack
         end
 
         if (type = ::Mime::LOOKUP[self.content_type]) && (type_symbol = type.symbol).present?
-          path = "#{path}.#{type_symbol}"
+          path = "#{path}.#{type_symbol}" unless /#{type_symbol}\z/.match(path)
         end
 
         Rack::PageCaching::Cache.write_file(
