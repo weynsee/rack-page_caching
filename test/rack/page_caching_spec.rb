@@ -11,8 +11,8 @@ describe Rack::PageCaching do
     rack_response = response
     Rack::Builder.new {
       use Rack::PageCaching,
-        :page_cache_directory => path,
-        :include_hostname => true
+        page_cache_directory: path,
+        include_hostname: true
       run lambda { |env| rack_response }
     }.to_app
   end

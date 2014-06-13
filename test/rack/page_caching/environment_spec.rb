@@ -23,9 +23,9 @@ describe Rack::PageCaching::Environment do
   describe 'set options' do
     let(:options) {
       {
-        :include_hostname => true,
-        :page_cache_compression => :best_compression,
-        :page_cache_directory => '/var/tmp'
+        include_hostname: true,
+        page_cache_compression: :best_compression,
+        page_cache_directory: '/var/tmp'
       }
     }
 

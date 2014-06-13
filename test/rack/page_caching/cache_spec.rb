@@ -38,7 +38,7 @@ describe Rack::PageCaching::Cache do
     subject { cache.gzip_level }
 
     describe 'from config' do
-      let(:options) { { :page_cache_compression => :best_compression } }
+      let(:options) { { page_cache_compression: :best_compression } }
 
       it 'returns the gzip_level from config if gzip level is not specified in response' do
         subject.must_equal Zlib::BEST_COMPRESSION
@@ -48,7 +48,7 @@ describe Rack::PageCaching::Cache do
     describe 'from response' do
       before do
         env.merge! 'rack.page_caching.compression' => Rack::PageCaching::Utils.gzip_level(:best_speed)
-        options.merge! :page_cache_compression => :best_compression
+        options.merge! page_cache_compression: :best_compression
       end
 
       it 'returns the gzip_level from response' do
@@ -80,7 +80,7 @@ describe Rack::PageCaching::Cache do
     end
 
     describe 'uses hostname' do
-      before { options.merge!(:include_hostname => true) }
+      before { options.merge!(include_hostname: true) }
 
       it 'includes hostname in cache path' do
         subject.must_equal '/www.example.org/hotels/singapore.html'
@@ -108,7 +108,7 @@ describe Rack::PageCaching::Cache do
   describe 'saving to disk' do
     include FileHelper
 
-    let(:options) { { :page_cache_directory => cache_path } }
+    let(:options) { { page_cache_directory: cache_path } }
     let(:cache_file) { File.join(cache_path, 'hotels', 'singapore.html') }
     let(:cache_content) { File.read(cache_file) }
 
@@ -127,8 +127,8 @@ describe Rack::PageCaching::Cache do
       describe 'compression' do
         let(:options) do
           {
-            :page_cache_compression => :best_speed,
-            :page_cache_directory =>  cache_path,
+            page_cache_compression: :best_speed,
+            page_cache_directory:  cache_path,
           }
         end
 

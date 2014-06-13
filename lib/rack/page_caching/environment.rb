@@ -42,9 +42,9 @@ module Rack
 
       def normalize_values
         @options.merge!(
-          :page_cache_compression => Rack::PageCaching::Utils.gzip_level(
+          page_cache_compression: Rack::PageCaching::Utils.gzip_level(
             @options[:page_cache_compression]),
-          :page_cache_directory => @options[:page_cache_directory].to_s,
+          page_cache_directory: @options[:page_cache_directory].to_s,
         )
       end
 
@@ -55,8 +55,8 @@ module Rack
 
       def set_rails_defaults
         @options = {
-          :page_cache_directory => ::Rails.root.join('public'),
-          :enable => ::Rails.application.config.action_controller.perform_caching
+          page_cache_directory: ::Rails.root.join('public'),
+          enable: ::Rails.application.config.action_controller.perform_caching
         }.merge(@options)
       end
     end
