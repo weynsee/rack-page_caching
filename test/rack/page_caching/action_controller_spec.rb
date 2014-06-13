@@ -4,12 +4,18 @@ require 'test_helper'
 require './test/support/file_helper'
 
 class TestController < ActionController::Base
-  caches_page :with_domain
+  caches_page :cache
   caches_page :just_head, if: Proc.new { |c| !c.request.format.json? }
   caches_page :redirect_somewhere
+  caches_page :no_gzip, gzip: false
+  caches_page :gzip_level, gzip: :best_speed
 
-  def with_domain
+  def cache
     render text: 'foo bar'
+  end
+
+  def no_gzip
+    render text: 'no gzip'
   end
 
   def just_head
@@ -24,6 +30,10 @@ class TestController < ActionController::Base
     render text: 'custom'
     cache_page('Cache rules everything around me', 'wootang.html')
   end
+
+  def gzip_level
+    render text: 'level up'
+  end
 end
 
 describe Rack::PageCaching::ActionController do
@@ -36,11 +46,12 @@ describe Rack::PageCaching::ActionController do
       include_hostname: false
     }
     Rack::Builder.new {
-      map '/with_domain' do
+      map '/with-domain' do
         use Rack::PageCaching, options.merge(include_hostname: true)
-        run TestController.action(:with_domain)
+        run TestController.action(:cache)
       end
-      [:just_head, :redirect_somewhere, :custom_caching].each do |action|
+      [:cache, :just_head, :redirect_somewhere, :custom_caching,
+       :no_gzip, :gzip_level].each do |action|
         map "/#{action}" do
           use Rack::PageCaching, options
           run TestController.action(action)
@@ -55,10 +66,21 @@ describe Rack::PageCaching::ActionController do
 
   let(:cache_file) { File.join(*@cache_path) }
 
+  it 'caches the requested page and creates gzipped file by default' do
+    get '/cache'
+    set_path 'cache.html'
+    assert File.exist?(cache_file), 'cache.html should exist'
+    File.read(cache_file).must_equal 'foo bar'
+    assert File.exist?(File.join(cache_path, 'cache.html.gz')),
+      'gzipped cache.html file should exist'
+    assert last_request.env['rack.page_caching.compression'] == Zlib::BEST_COMPRESSION,
+      'compression level must be best compression by default'
+  end
+
   it 'saves to a file with the domain as a folder' do
-    get 'http://www.test.org/with_domain'
-    set_path 'www.test.org', 'with_domain.html'
-    assert File.exist?(cache_file), 'with_domain.html should exist'
+    get 'http://www.test.org/with-domain'
+    set_path 'www.test.org', 'with-domain.html'
+    assert File.exist?(cache_file), 'with-domain.html should exist'
     File.read(cache_file).must_equal 'foo bar'
   end
 
@@ -78,5 +100,19 @@ describe Rack::PageCaching::ActionController do
     set_path 'wootang.html'
     assert File.exist?(cache_file), 'wootang.html should exist'
     File.read(cache_file).must_equal 'Cache rules everything around me'
+  end
+
+  it 'does not create a gzip file when gzip argument is false' do
+    get '/no_gzip'
+    set_path 'no_gzip.html'
+    assert File.exist?(cache_file), 'no_gzip.html should exist'
+    refute File.exist?(File.join(cache_path, 'no_gzip.html.gz')),
+      'gzipped no_gzip.html file should not exist'
+  end
+
+  it 'allows overriding of gzip level' do
+    get '/gzip_level'
+    assert last_request.env['rack.page_caching.compression'] == Zlib::BEST_SPEED,
+      'compression level must be set to the requested level'
   end
 end
