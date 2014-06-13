@@ -19,7 +19,7 @@ module Rack
         if !path.include?('..')
           type = Rack::PageCaching::MimeTypes.extension_for @response.content_type
           path = '/index' if path.empty?
-          path = "#{path}#{type}" unless /#{type}\z/.match(path)
+          path = "#{path}#{type}" unless /#{Regexp.quote(type)}\z/.match(path)
           path = "/#{@response.host}#{path}"  if config.include_hostname?
           path
         end

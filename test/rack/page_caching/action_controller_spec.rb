@@ -135,9 +135,9 @@ describe Rack::PageCaching::ActionController do
       'compression level must be set to the requested level'
   end
 
-  it 'caches by http accept attribute' do
-    get '/accept_xml', {}, { 'HTTP_ACCEPT' => 'text/xml' }
+  it 'caches according to requested format' do
+    get '/accept_xml', { format: :xml }
     set_path 'accept_xml.xml'
-    #assert File.exist?(cache_file), 'accept_xml.xml should exist'
+    assert File.exist?(cache_file), 'accept_xml.xml should exist'
   end
 end
