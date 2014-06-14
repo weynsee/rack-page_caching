@@ -164,15 +164,20 @@ describe Rack::PageCaching::ActionController do
     File.read(cache_file).must_equal 'Cache rules everything around me'
   end
 
-  it 'expires page at custom path' do
-    get '/custom_caching'
-    set_path 'wootang.html'
-    assert File.exist?(cache_file), 'wootang.html should exist'
-    assert File.exist?(cache_file + '.gz'), 'wootang.html.gz should exist'
+  def assert_file_deleted_after_expiry(path, expire_path, file)
+    get path
+    set_path file
+    assert File.exist?(cache_file), "#{file} should exist"
+    assert File.exist?(cache_file + '.gz'), "#{file}.gz should exist"
 
-    get '/expire_custom_caching'
-    refute File.exist?(cache_file), 'wootang.html should be deleted'
-    refute File.exist?(cache_file + '.gz'), 'wootang.html.gz should be deleted'
+    get expire_path
+    refute File.exist?(cache_file), "#{file} should be deleted"
+    refute File.exist?(cache_file + '.gz'), "#{file}.gz should be deleted"
+  end
+
+  it 'expires page at custom path' do
+    assert_file_deleted_after_expiry '/custom_caching', '/expire_custom_caching',
+      'wootang.html'
   end
 
   it 'caches custom text whose path starts with a slash' do
@@ -183,14 +188,8 @@ describe Rack::PageCaching::ActionController do
   end
 
   it 'expires page with path that starts with slash' do
-    get '/custom_caching_with_starting_slash'
-    set_path 'slash.html'
-    assert File.exist?(cache_file), '/slash.html should exist'
-    assert File.exist?(cache_file + '.gz'), '/slash.html.gz should exist'
-
-    get '/expire_starting_slash'
-    refute File.exist?(cache_file), '/slash.html should be deleted'
-    refute File.exist?(cache_file + '.gz'), '/slash.html.gz should be deleted'
+    assert_file_deleted_after_expiry '/custom_caching_with_starting_slash',
+      '/expire_starting_slash', 'slash.html'
   end
 
   it 'caches path that does not have extensions' do
@@ -206,14 +205,8 @@ describe Rack::PageCaching::ActionController do
   end
 
   it 'expires path with trailing slash' do
-    get '/with_trailing_slash'
-    set_path 'hello/world.html'
-    assert File.exist?(cache_file), 'hello/world.html should exist'
-    assert File.exist?(cache_file + '.gz'), 'hello/world.html.gz should exist'
-
-    get '/expire_trailing_slash'
-    refute File.exist?(cache_file), 'hello/world.html should be deleted'
-    refute File.exist?(cache_file + '.gz'), 'hello/world.html.gz should be deleted'
+    assert_file_deleted_after_expiry '/with_trailing_slash',
+      '/expire_trailing_slash', 'hello/world.html'
   end
 
   it 'does not create a gzip file when gzip argument is false' do
