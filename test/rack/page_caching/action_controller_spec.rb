@@ -93,6 +93,10 @@ describe Rack::PageCaching::ActionController do
         use Rack::PageCaching, options.merge(include_hostname: true)
         run TestController.action(:cache)
       end
+      map '/' do
+        use Rack::PageCaching, options
+        run TestController.action(:cache)
+      end
       [:cache, :just_head, :redirect_somewhere, :custom_caching,
        :no_gzip, :gzip_level, :without_extension, :accept_xml,
        :custom_caching_with_starting_slash, :expire_custom_caching,
@@ -133,6 +137,13 @@ describe Rack::PageCaching::ActionController do
   it 'respects conditionals' do
     get '/cache', format: :json
     assert_cache_folder_is_empty
+  end
+
+  it 'caches to index.html when caching on /' do
+    get '/'
+    set_path 'index.html'
+    assert File.exist?(cache_file),
+      'index.html file should exist'
   end
 
   it 'caches head request' do
