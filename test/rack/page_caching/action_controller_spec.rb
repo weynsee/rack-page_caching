@@ -4,8 +4,8 @@ require 'test_helper'
 require './test/support/file_helper'
 
 class TestController < ActionController::Base
-  caches_page :cache
-  caches_page :just_head, if: Proc.new { |c| !c.request.format.json? }
+  caches_page :cache, if: Proc.new { |c| !c.request.format.json? }
+  caches_page :just_head
   caches_page :redirect_somewhere
   caches_page :no_gzip, gzip: false
   caches_page :gzip_level, gzip: :best_speed
@@ -95,6 +95,11 @@ describe Rack::PageCaching::ActionController do
     set_path 'www.test.org', 'with-domain.html'
     assert File.exist?(cache_file), 'with-domain.html should exist'
     File.read(cache_file).must_equal 'foo bar'
+  end
+
+  it 'respects conditionals' do
+    get '/cache', format: :json
+    assert_cache_folder_is_empty
   end
 
   it 'caches head request' do
