@@ -162,6 +162,26 @@ describe Rack::PageCaching::Cache do
         Rack::PageCaching::Cache.delete(File.join('hotels', 'singapore.html'))
         refute File.exist?(cache_file)
       end
+
+      describe 'globs' do
+        let(:options) do
+          {
+            page_cache_directory:  cache_path,
+            include_hostname: true
+          }
+        end
+
+        let(:cache_file) do
+          File.join(cache_path, 'www.example.org', 'hotels', 'singapore.html')
+        end
+
+        it 'accepts globs in path' do
+          Rack::PageCaching::Cache.store(response)
+          assert File.exist?(cache_file)
+          Rack::PageCaching::Cache.delete(File.join('**', 'hotels', 'singapore.html'))
+          refute File.exist?(cache_file)
+        end
+      end
     end
   end
 end

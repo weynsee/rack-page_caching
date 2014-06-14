@@ -43,6 +43,7 @@ module Rack
           else
             request.path
         end
+        path = path.chomp('/')
 
         if (type = ::Mime::LOOKUP[self.content_type]) && (type_symbol = type.symbol).present?
           path = "#{path}.#{type_symbol}" unless /#{type_symbol}\z/.match(path)
