@@ -44,6 +44,14 @@ describe Rack::PageCaching::Environment do
     it 'sets the correct page cache directory' do
       env.page_cache_directory.must_equal '/var/tmp'
     end
+
+    describe 'page_cache_directory' do
+      before { options.merge! page_cache_directory: Pathname.new('/var/tmp') }
+
+      it 'accepts a Pathname as page cache directory' do
+        env.page_cache_directory.must_equal '/var/tmp'
+      end
+    end
   end
 
   describe 'in Rails' do
