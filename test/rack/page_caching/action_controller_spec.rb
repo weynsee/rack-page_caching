@@ -32,12 +32,23 @@ class TestController < ActionController::Base
     cache_page('Cache rules everything around me', 'wootang.html')
   end
 
+  def expire_custom_caching
+    expire_page 'wootang.html'
+    head :ok
+  end
+
+  def expire_custom_caching
+    expire_page 'wootang.html'
+    head :ok
+  end
+
   def custom_caching_with_starting_slash
     render text: 'custom'
     cache_page('Starting slash', '/slash.html')
   end
 
-  def expire_custom_caching
+  def expire_starting_slash
+    expire_page '/slash.html'
     head :ok
   end
 
@@ -74,7 +85,8 @@ describe Rack::PageCaching::ActionController do
       end
       [:cache, :just_head, :redirect_somewhere, :custom_caching,
        :no_gzip, :gzip_level, :without_extension, :accept_xml,
-       :custom_caching_with_starting_slash
+       :custom_caching_with_starting_slash, :expire_custom_caching,
+       :expire_starting_slash
       ].each do |action|
         map "/#{action}" do
           use Rack::PageCaching, options
@@ -131,11 +143,33 @@ describe Rack::PageCaching::ActionController do
     File.read(cache_file).must_equal 'Cache rules everything around me'
   end
 
+  it 'expires page at custom path' do
+    get '/custom_caching'
+    set_path 'wootang.html'
+    assert File.exist?(cache_file), 'wootang.html should exist'
+    assert File.exist?(cache_file + '.gz'), 'wootang.html.gz should exist'
+
+    get '/expire_custom_caching'
+    refute File.exist?(cache_file), 'wootang.html should be deleted'
+    refute File.exist?(cache_file + '.gz'), 'wootang.html.gz should be deleted'
+  end
+
   it 'caches custom text whose path starts with a slash' do
     get '/custom_caching_with_starting_slash'
     set_path '/slash.html'
     assert File.exist?(cache_file), '/slash.html should exist'
     File.read(cache_file).must_equal 'Starting slash'
+  end
+
+  it 'expires page with path that starts with slash' do
+    get '/custom_caching_with_starting_slash'
+    set_path '/slash.html'
+    assert File.exist?(cache_file), '/slash.html should exist'
+    assert File.exist?(cache_file + '.gz'), '/slash.html.gz should exist'
+
+    get '/expire_starting_slash'
+    refute File.exist?(cache_file), '/slash.html should be deleted'
+    refute File.exist?(cache_file + '.gz'), '/slash.html.gz should be deleted'
   end
 
   it 'caches paths that do not have extensions' do
