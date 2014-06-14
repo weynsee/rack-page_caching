@@ -5,3 +5,7 @@ end
 appraise "rails-4" do
   gem "rails", github: 'rails/rails', branch: '4-0-stable'
 end
+
+appraise "rails-edge" do
+  gem "rails", github: 'rails/rails', branch: 'master'
+end
