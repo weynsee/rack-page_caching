@@ -32,6 +32,15 @@ class TestController < ActionController::Base
     cache_page('Cache rules everything around me', 'wootang.html')
   end
 
+  def custom_caching_with_starting_slash
+    render text: 'custom'
+    cache_page('Starting slash', '/slash.html')
+  end
+
+  def expire_custom_caching
+    head :ok
+  end
+
   def without_extension
     render text: 'without extension'
     cache_page('Path without extension', 'without_extension')
@@ -64,7 +73,9 @@ describe Rack::PageCaching::ActionController do
         run TestController.action(:cache)
       end
       [:cache, :just_head, :redirect_somewhere, :custom_caching,
-       :no_gzip, :gzip_level, :without_extension, :accept_xml].each do |action|
+       :no_gzip, :gzip_level, :without_extension, :accept_xml,
+       :custom_caching_with_starting_slash
+      ].each do |action|
         map "/#{action}" do
           use Rack::PageCaching, options
           run TestController.action(action)
@@ -118,6 +129,13 @@ describe Rack::PageCaching::ActionController do
     set_path 'wootang.html'
     assert File.exist?(cache_file), 'wootang.html should exist'
     File.read(cache_file).must_equal 'Cache rules everything around me'
+  end
+
+  it 'caches custom text whose path starts with a slash' do
+    get '/custom_caching_with_starting_slash'
+    set_path '/slash.html'
+    assert File.exist?(cache_file), '/slash.html should exist'
+    File.read(cache_file).must_equal 'Starting slash'
   end
 
   it 'caches paths that do not have extensions' do
