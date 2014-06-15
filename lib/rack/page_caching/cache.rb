@@ -60,8 +60,9 @@ module Rack
 
       def self.expand_path(name, path)
         env = Rack::PageCaching.environment
-        env.instrument name, path do
-          yield(::File.join(env.page_cache_directory, path))
+        full_path = ::File.join(env.page_cache_directory, path)
+        env.instrument name, full_path do
+          yield full_path
         end
       end
 

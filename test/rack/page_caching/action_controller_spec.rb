@@ -242,7 +242,8 @@ describe Rack::PageCaching::ActionController do
     let(:subscribe) do
       Counter.reset
       Counter.check.must_equal 0
-      @subscriber = ActiveSupport::Notifications.subscribe(@event) do |*args|
+      @subscriber = ActiveSupport::Notifications.subscribe(@event) do |name, start, finish, id, payload|
+        payload[:path].must_equal cache_file
         Counter.incr
       end
     end
@@ -253,6 +254,7 @@ describe Rack::PageCaching::ActionController do
 
     it 'notifies subscribers after writing' do
       @event = 'write_page.action_controller'
+      set_path 'cache.html'
       subscribe
       get '/cache'
       Counter.check.must_equal 1
@@ -260,6 +262,7 @@ describe Rack::PageCaching::ActionController do
 
     it 'notifies subscribers after deleting' do
       @event = 'expire_page.action_controller'
+      set_path 'wootang.html'
       subscribe
       get '/custom_caching'
       get '/expire_custom_caching'
