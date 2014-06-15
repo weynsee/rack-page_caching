@@ -52,7 +52,7 @@ describe Rack::PageCaching do
       let(:env) { { 'rack.page_caching.perform_caching' => 'true' } }
 
       it 'creates a file after the request' do
-        assert File.exist?(cache_file)
+        File.exist?(cache_file).must_equal true
         File.read(cache_file).must_equal 'Foo Bar'
       end
 
@@ -66,7 +66,7 @@ describe Rack::PageCaching do
 
         it 'creates a compressed file after the request' do
           cache = File.join(cache_path, 'www.fakeuri.org', 'hello.html.gz')
-          assert File.exist?(cache)
+          File.exist?(cache).must_equal true
           Zlib::GzipReader.open(cache) do |gz|
             gz.read.must_equal 'Foo Bar'
           end

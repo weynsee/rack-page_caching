@@ -136,7 +136,7 @@ describe Rack::PageCaching::Cache do
 
         it 'creates a compressed file' do
           cache.store
-          assert File.exist?(zipped_path)
+          File.exist?(zipped_path).must_equal true
         end
 
         it 'zips the content' do
@@ -158,7 +158,7 @@ describe Rack::PageCaching::Cache do
     describe '.delete' do
       it 'stores the file to disk' do
         Rack::PageCaching::Cache.store(response)
-        assert File.exist?(cache_file)
+        File.exist?(cache_file).must_equal true
         Rack::PageCaching::Cache.delete(File.join('hotels', 'singapore.html'))
         refute File.exist?(cache_file)
       end
@@ -177,7 +177,7 @@ describe Rack::PageCaching::Cache do
 
         it 'accepts globs in path' do
           Rack::PageCaching::Cache.store(response)
-          assert File.exist?(cache_file)
+          File.exist?(cache_file).must_equal true
           Rack::PageCaching::Cache.delete(File.join('**', 'hotels', 'singapore.html'))
           refute File.exist?(cache_file)
         end

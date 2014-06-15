@@ -30,11 +30,11 @@ describe Rack::PageCaching::Environment do
     }
 
     it 'includes hostname' do
-      assert env.include_hostname?
+      env.include_hostname?.must_equal true
     end
 
     it 'is enabled' do
-      assert env.enabled?
+      env.enabled?.must_equal true
     end
 
     it 'returns the correct zlib compression constant' do
