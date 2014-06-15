@@ -71,6 +71,8 @@ config.middleware.use Rack::PageCaching,
   # Hostnames can be included in the path of the page cache. Default is false.
   include_hostname: false
 ```
+Rack::PageCaching respects `config.action_controller.perform_caching` and
+will skip cache generation if it is true.
 
 To configure your web server to serve the generated pages directly, point it to
 `page_cache_directory`. For Nginx, it would look something like:
