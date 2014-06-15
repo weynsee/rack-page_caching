@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Wayne See"]
   spec.email         = ["weynsee@gmail.com"]
   spec.summary       = %q{Page caching for Rack.}
-  spec.description   = %q{Rack middleware to generate pages that can be served by a webserver. Compatible with Rails page caching.}
-  spec.homepage      = ""
+  spec.description   = %q{Rack middleware to generate pages that can be served by a web server. Compatible with Rails page caching.}
+  spec.homepage      = "https://github.com/weynsee/rack-page_caching"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
