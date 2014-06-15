@@ -1,8 +1,9 @@
 # Rack::PageCaching
 
-[![Dependency Status](https://gemnasium.com/weynsee/rack-page_caching.svg)](https://gemnasium.com/weynsee/rack-page_caching)
+[![Gem Version](https://badge.fury.io/rb/rack-page_caching.svg)](http://badge.fury.io/rb/rack-page_caching)
 [![Build Status](https://travis-ci.org/weynsee/rack-page_caching.svg?branch=master)](https://travis-ci.org/weynsee/rack-page_caching)
 [![Coverage Status](https://img.shields.io/coveralls/weynsee/rack-page_caching.svg)](https://coveralls.io/r/weynsee/rack-page_caching?branch=master)
+[![Dependency Status](https://gemnasium.com/weynsee/rack-page_caching.svg)](https://gemnasium.com/weynsee/rack-page_caching)
 
 Rack::PageCaching is a Rack middleware that aids in static page caching. It serves
 the same purpose as [page caching in Rails](https://github.com/rails/actionpack-page_caching) 
