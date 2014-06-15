@@ -13,7 +13,7 @@ module FileHelper
         FileUtils.mkdir_p(cache_path)
       end
 
-      #after { FileUtils.rm_rf(::File.dirname(cache_path)) }
+      after { FileUtils.rm_rf(::File.dirname(cache_path)) }
     end
 
     def assert_cache_folder_is_empty
