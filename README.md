@@ -75,7 +75,8 @@ Rack::PageCaching respects `config.action_controller.perform_caching` and
 will skip cache generation if it is false.
 
 To configure your web server to serve the generated pages directly, point it to
-`page_cache_directory`. For Nginx, it would look something like:
+`page_cache_directory`. For Nginx, it would look something like the following
+if you include hostnames:
 ```
 if (-f $document_root/page_cache/$host/$uri/index.html) {
   rewrite (.*) /page_cache/$host/$1/index.html break;
