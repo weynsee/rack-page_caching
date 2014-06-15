@@ -37,11 +37,6 @@ class TestController < ActionController::Base
     head :ok
   end
 
-  def expire_custom_caching
-    expire_page 'wootang.html'
-    head :ok
-  end
-
   def custom_caching_with_starting_slash
     render text: 'custom'
     cache_page('Starting slash', '/slash.html')
@@ -227,5 +222,48 @@ describe Rack::PageCaching::ActionController do
     get '/accept_xml', { format: :xml }
     set_path 'accept_xml.xml'
     assert File.exist?(cache_file), 'accept_xml.xml should exist'
+  end
+
+  describe 'notifications' do
+    class Counter
+      def self.incr
+        @counter += 1
+      end
+
+      def self.reset
+        @counter = 0
+      end
+
+      def self.check
+        @counter
+      end
+    end
+
+    let(:subscribe) do
+      Counter.reset
+      Counter.check.must_equal 0
+      @subscriber = ActiveSupport::Notifications.subscribe(@event) do |*args|
+        Counter.incr
+      end
+    end
+
+    after do
+      ActiveSupport::Notifications.unsubscribe @subscriber
+    end
+
+    it 'notifies subscribers after writing' do
+      @event = 'write_page.action_controller'
+      subscribe
+      get '/cache'
+      Counter.check.must_equal 1
+    end
+
+    it 'notifies subscribers after deleting' do
+      @event = 'expire_page.action_controller'
+      subscribe
+      get '/custom_caching'
+      get '/expire_custom_caching'
+      Counter.check.must_equal 1
+    end
   end
 end

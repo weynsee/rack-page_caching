@@ -34,7 +34,7 @@ module Rack
       end
 
       def self.write_file(content, path, gzip_level)
-        expand_path('write_file', path) do |full_path|
+        expand_path('write_page', path) do |full_path|
           FileUtils.makedirs(::File.dirname(full_path))
           ::File.open(full_path, 'wb+') { |f| content.each { |c| f.write(c) } }
           if gzip_level
@@ -48,7 +48,7 @@ module Rack
       end
 
       def self.delete(path)
-        expand_path('delete_file', path) do |full_path|
+        expand_path('expire_page', path) do |full_path|
           Dir[full_path].each do |file|
             ::File.delete(file)
             ::File.delete(file + '.gz') if ::File.exist?(file + '.gz')

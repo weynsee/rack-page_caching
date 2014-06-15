@@ -24,7 +24,7 @@ module Rack
 
       def instrument(name, path)
         if defined? ActiveSupport::Notifications
-          ActiveSupport::Notifications.instrument("rack.page_caching.#{name}", path: path) do
+          ActiveSupport::Notifications.instrument("#{name}.action_controller", path: path) do
             yield
           end
         else
