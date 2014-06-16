@@ -6,8 +6,8 @@
 [![Dependency Status](https://gemnasium.com/weynsee/rack-page_caching.svg)](https://gemnasium.com/weynsee/rack-page_caching)
 
 Rack::PageCaching is a Rack middleware that aids in static page caching. It serves
-the same purpose as [page caching in Rails](https://github.com/rails/actionpack-page_caching) 
-and was designed to be a drop-in replacement to Rails page caching.
+the same purpose as [Rails page caching](https://github.com/rails/actionpack-page_caching) 
+and was designed to be a drop-in replacement for it.
 
 Rack::PageCaching provides a few differences from Rails page caching. It is
 implemented as a Rack middleware, which means transformations done on the 
@@ -70,7 +70,7 @@ config.middleware.use Rack::PageCaching,
   # e.g. :best_speed and :best_compression. To turn off gzip, pass in false.
   gzip: :best_speed,
   # Hostnames can be included in the path of the page cache. Default is false.
-  include_hostname: false
+  include_hostname: true
 ```
 Rack::PageCaching respects `config.action_controller.perform_caching` and
 will skip cache generation if it is false.
@@ -105,6 +105,12 @@ class WeblogController < ActionController::Base
   end
 end
 ```
+
+## Acknowledgements
+
+Tests for compatibility with Rails page caching and ActionController integration
+were heavily inspired by code in the 
+[Rails page caching gem](https://github.com/rails/actionpack-page_caching).
 
 ## Contributing
 
