@@ -105,6 +105,12 @@ class WeblogController < ActionController::Base
   end
 end
 ```
+You can delete pages manually (e.g. in a rake task) using the following command:
+```ruby
+Rack::PageCaching::Cache.delete 'weblog/*.html'
+# if you have hostnames enabled, use '**/weblog/*.html' to delete regardless
+# of which hostname the files are nested in
+```
 
 ## Acknowledgements
 
