@@ -69,6 +69,8 @@ module Rack
       def config
         Rack::PageCaching.environment
       end
+
+      private_class_method :expand_path
     end
   end
 end
